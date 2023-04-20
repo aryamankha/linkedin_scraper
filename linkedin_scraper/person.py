@@ -45,14 +45,19 @@ class Person(Scraper):
         if driver is None:
             try:
                 if os.getenv("CHROMEDRIVER") == None:
+                    print("got here")
                     driver_path = os.path.join(
                         os.path.dirname(__file__), "drivers/chromedriver"
                     )
                 else:
+                    print("got here 2")
+
                     driver_path = os.getenv("CHROMEDRIVER")
 
                 driver = webdriver.Chrome(driver_path)
             except:
+                print("got here 3")
+
                 driver = webdriver.Chrome()
 
         if get:
