@@ -73,7 +73,7 @@ class Company(Scraper):
                 driver = webdriver.Chrome()
 
         driver.get(linkedin_url)
-        self.driver = driver
+        self.driver = driver 
 
         if scrape:
             self.scrape(get_employees=get_employees, close_on_complete=close_on_complete)
@@ -123,6 +123,7 @@ class Company(Scraper):
 
         try:
             see_all_employees = driver.find_element(By.XPATH,'//a[@data-control-name="topcard_see_all_employees"]')
+            print("found topcard_see_all_employees")
         except:
             pass
         driver.get(os.path.join(self.linkedin_url, "people"))
@@ -134,8 +135,13 @@ class Company(Scraper):
         driver.execute_script("window.scrollTo(0, Math.ceil(document.body.scrollHeight*3/4));")
         time.sleep(1)
 
-        results_list = driver.find_element(By.CLASS_NAME, list_css)
+        # results_list = driver.find_element(By.CLASS_NAME, list_css)
+        results_list = driver.find_element(By.XPATH, "//ul[contains(@class, 'list-style-none') and contains(@class, 'flex-wrap') and contains(@class, 'display-flex')]" )
+        print("Found results list")
         results_li = results_list.find_elements(By.TAG_NAME, "li")
+        print("Found results")
+        for result in results_li:
+            print(result.text)
         for res in results_li:
             total.append(self.__parse_employee__(res))
 
@@ -148,6 +154,7 @@ class Company(Scraper):
             driver.execute_script("window.scrollTo(0, Math.ceil(document.body.scrollHeight));")
             results_li = results_list.find_elements(By.TAG_NAME, "li")
             loop += 1
+            print(loop)
           return loop <= 5
 
         def get_data(previous_results):
@@ -156,7 +163,9 @@ class Company(Scraper):
                 total.append(self.__parse_employee__(res))
 
         results_li_len = len(results_li)
+        print("num results:", results_li_len)
         while is_loaded(results_li_len):
+            print("Trying to repeatedly scroll")
             try:
                 driver.find_element(By.XPATH,next_xpath).click()
             except:
@@ -208,6 +217,7 @@ class Company(Scraper):
        #section ID is no longer needed, we are using class name now.
         #grid = driver.find_elements_by_tag_name("section")[section_id]
         grid = driver.find_element(By.CLASS_NAME, "artdeco-card.p5.mb4")
+        print("Found ArtDeco card")
         print(grid)
         descWrapper = grid.find_elements(By.TAG_NAME, "p")
         if len(descWrapper) > 0:
@@ -237,7 +247,7 @@ class Company(Scraper):
                 self.founded = values[i+x_off].text.strip()
             elif txt == 'Specialties':
                 self.specialties = "\n".join(values[i+x_off].text.strip().split(", "))
-
+        print("Got company info")
         grid = driver.find_element(By.CLASS_NAME, "mt1")
         spans = grid.find_elements(By.TAG_NAME, "span")
         for span in spans:
@@ -275,7 +285,9 @@ class Company(Scraper):
         except:
             pass
 
+        print("Set up to find employees")
         if get_employees:
+            print("Started finding employees")
             self.employees = self.get_employees()
 
         driver.get(self.linkedin_url)
