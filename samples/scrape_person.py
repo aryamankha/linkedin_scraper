@@ -6,4 +6,4 @@ driver = webdriver.Chrome("./chromedriver")
 email = os.getenv("LINKEDIN_USER")
 password = os.getenv("LINKEDIN_PASSWORD")
 actions.login(driver, email, password) # if email and password isnt given, it'll prompt in terminal
-person = Person("https://www.linkedin.com/in/andre-iguodala-65b48ab5", driver=driver)
+person = Person("https://www.linkedin.com/in/andre-iguodala-65b48ab5", driver=driver, close_on_complete=False)
